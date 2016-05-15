@@ -1,12 +1,11 @@
 package main;
 
-import server_connection.Connect_Bot;
+import server_connection.InitBot;
 
 public class IRC_BOT
 {
 	public static void main(String[] args) throws Exception
 	{
-		new Connect_Bot();
+		new InitBot();		
 	}
-
 }
