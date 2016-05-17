@@ -2,6 +2,7 @@ package bot_output;
 
 import java.io.IOException;
 
+import reddit.InitReddit;
 import utils.StaticVariables;
 
 public class Command_Center
@@ -9,6 +10,7 @@ public class Command_Center
 	//A program = Requires multi-line interaction with bot
 	private String usersCommand;
 	private Morse_Code morse;
+	private InitReddit reddit;
 	Writer writer = new Writer();
 	
 	//Distributes the users commands
@@ -45,6 +47,11 @@ public class Command_Center
 				morse = new Morse_Code();
 				morse.introduce_morse();
 				break;
+			case "reddit":
+				StaticVariables.currentProgram = "reddit";
+				reddit = new InitReddit();
+				reddit.introduceReddit();
+				break;
 			default: 
 				writer.writeMessage("Unknown Command. Type '$help' for assistance");
 				break;	
@@ -58,6 +65,12 @@ public class Command_Center
 				morse = new Morse_Code();
 				morse.encode(usersCommand);
 			}
+			else if(StaticVariables.currentProgram.equals("reddit"))
+			{
+				reddit = new InitReddit();
+				//enter method commands below
+				reddit.answerQuestion(usersCommand);
+			}
 		}
 	}
 	
@@ -65,7 +78,7 @@ public class Command_Center
 	private void help() throws IOException
 	{
 		//Provides a list of commands available to the user
-		String help = "List of commands include: ['$help'] [$flipcoin] ['$morsecode']";
+		String help = "List of commands include: ['$help'] [$flipcoin] ['$morsecode'] ['$reddit']";
 		
 		writer.writeMessage(help);
 	}
