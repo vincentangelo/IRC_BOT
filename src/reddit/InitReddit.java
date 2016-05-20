@@ -20,7 +20,7 @@ public class InitReddit
 	{
 		try
 		{
-			writer.writeMessage("Ask the bot any question you would like:");
+			writer.writeMessage("Ask the bot a question ('$exit' to leave program):");
 		} catch (IOException e)
 		{
 			e.printStackTrace();

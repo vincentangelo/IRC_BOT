@@ -11,8 +11,8 @@ public class InitBot
 
 	public InitBot() throws Exception
 	{
-		login = "SaVi_Bot";
-		nick = "SaVi_Bot";
+		login = "SaVi_Bot2";
+		nick = "SaVi_Bot2";
 		channel = StaticVariables.CHANNEL;
 
 		// Connect the bot to the irc client

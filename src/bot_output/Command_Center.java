@@ -11,6 +11,7 @@ public class Command_Center
 	private String usersCommand;
 	private Morse_Code morse;
 	private InitReddit reddit;
+	private Weather weather;
 	Writer writer = new Writer();
 	
 	//Distributes the users commands
@@ -52,6 +53,11 @@ public class Command_Center
 				reddit = new InitReddit();
 				reddit.introduceReddit();
 				break;
+			case "weather":
+				StaticVariables.currentProgram = "weather";
+				weather = new Weather();
+				weather.initWeather();
+				break;
 			default: 
 				writer.writeMessage("Unknown Command. Type '$help' for assistance");
 				break;	
@@ -71,6 +77,12 @@ public class Command_Center
 				//enter method commands below
 				reddit.answerQuestion(usersCommand);
 			}
+			else if(StaticVariables.currentProgram.equals("weather"))
+			{
+				weather = new Weather();
+				//Get the weather based on the users inputted zip code
+				weather.getWeather(usersCommand);
+			}
 		}
 	}
 	
@@ -78,7 +90,8 @@ public class Command_Center
 	private void help() throws IOException
 	{
 		//Provides a list of commands available to the user
-		String help = "List of commands include: ['$help'] [$flipcoin] ['$morsecode'] ['$reddit']";
+		String help = "List of commands include: ['$help'] [$flipcoin] ['$morsecode'] ['$reddit']"
+				+ " ['$weather']";
 		
 		writer.writeMessage(help);
 	}
