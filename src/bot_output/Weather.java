@@ -27,6 +27,7 @@ public class Weather
 	
 	public void getWeather(String zip)
 	{
+		String result = "";
 		zipCode = zip;
 		
 		if(zipCode.equals("$exit"))
@@ -38,7 +39,9 @@ public class Weather
 			try
 			{
 				//placeholder text
-				writer.writeMessage("Zipcode is: " + zipCode);
+				WeatherAPI api = new WeatherAPI(zipCode);
+				result = api.connect();
+				writer.writeMessage("The current weather is: " + result + "°");
 				initWeather();
 			} catch (IOException e)
 			{
