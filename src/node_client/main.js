@@ -3,7 +3,6 @@
 const Client = require('./irc');
 const fs = require('fs');
 const express = require('express');
-const client1 = new Client('#beginner', 'sawyer');
 let app = express();
 
 let users = [];
@@ -21,16 +20,18 @@ app.post('/send', (req, res) => {
 	findUser(nick).writeData(message);
 	res.sendStatus(200);
 });
-app.get('pull', (req, res) => {
+app.get('/pull', (req, res) => {
 	let nick = req.query.nick;
 	let messages = findUser(nick).getMessages();
 
 	let obj = {
 		messages
 	}
-
 	res.json(obj);
+
 });
+app.use(express.static('public'));
+	
 
 function findUser( nick ) {
 	users.forEach(function(elem) {

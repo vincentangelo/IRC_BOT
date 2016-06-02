@@ -1,0 +1,109 @@
+body, html {
+	margin: 0px;
+	padding: 0px;
+	height:100%;
+	width:100%;
+}
+* {
+	font-family: sans-serif;
+}
+div.top {
+	text-align: center;
+}
+main {
+	height:80%;
+	width:85%;
+	margin: auto;
+	border:1px solid red;
+}
+input[type="submit"], input[type="button"]  {
+	cursor:pointer;
+}
+main div.status-container {
+	height:;
+}
+div.status-container>h5 {
+	margin: 3px auto;
+	color:#1abc9c;
+	font-size: 15px;
+	text-align:center;
+}
+main section.messages-container {
+	height:90%;
+	width:100%;
+	background: #ecf0f1;
+	overflow:scroll;
+	text-align: left;
+}
+section.messages-container>* {
+	margin: 8px 2px;
+}
+section.messages-container .name{
+	color:red;
+	
+}
+section.messages-container .message-body{
+	margin-left: 25px;
+}
+section.messages-container .message>*{
+	display: inline-block;
+	font-size:16px;
+	margin: 0px;
+}
+main section.message-send {
+	margin-top: 15px;
+	text-align: center;
+}
+main section.message-send input:nth-child(2) {
+	border:0px;
+	border-radius: 3px;
+	outline:0;
+	background: #c0392b;
+	padding:3px 12px;
+	color:white;
+}
+main section.message-send input:first-child {
+	border:2px solid #c0392b;
+	border-radius:4px;
+	outline:0;
+	color:black;
+}	 
+/****/
+
+div.startup-container {
+	position:absolute;
+	right:30%;
+	top:30%;
+	height:40%;
+	width:40%;
+	background: #27ae60;
+	border-radius: 14px;
+}
+.startup-container #config-form > * {
+	display: block;
+	color:white;
+	text-align: center;
+	margin-top: 15px;
+	margin-bottom:5px;
+}
+.startup-container>h2 {
+	color:white;
+	text-align:center;
+}
+.startup-container #join-btn {
+	border:0px;
+	border-radius: 10px;
+	outline:0;
+	font-size: 14px;
+	background: #7f8c8d;
+	padding:10px 25px;
+	color:white;	
+	margin: 25px auto;
+}
+footer {
+	margin-top: 20%;
+	font-size: 15px;
+	text-align: center;
+	color:red;
+}
+
