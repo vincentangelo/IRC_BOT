@@ -1,29 +1,42 @@
-'use strict'
-const net = require('net');
+'use strict';
 
-let loggedIn = false;
+const Client = require('./irc');
+const fs = require('fs');
+const express = require('express');
+const client1 = new Client('#beginner', 'sawyer');
+let app = express();
 
-const client  = new net.Socket();
-client.connect(6667, 'irc.freenode.net', () => {
-	console.log('connected');
-	client.write('NICK kkkk9999 \r\n');
-	client.write("USER kkkk9999 8 * : Testing Bot Connection\r\n");
+let users = [];
+
+app.post('/join', (req, res) => {
+	let channel = req.query.channel;
+	let nick = req.query.nick;
+	users.push(new Client (channel, nick ) );
+	res.sendStatus(200);
 });
-client.on('data', (data) => {
-	console.log(data.toString());	
-	if(data.toString().indexOf('004') != -1) {
-		loggedIn = true;
-		client.write("JOIN #beginner \r\n");
 
-	} else if(data.toString().toLowerCase().substr(0, 4) === 'ping') {
-		console.log('PING');
+app.post('/send', (req, res) => {
+	let message = req.query.message;
+	let nick = req.query.nick;
+	findUser(nick).writeData(message);
+	res.sendStatus(200);
+});
+app.get('pull', (req, res) => {
+	let nick = req.query.nick;
+	let messages = findUser(nick).getMessages();
 
-		client.write('PONG ' + data.toString().split()[2] +'\r\n'	);
+	let obj = {
+		messages
 	}
+
+	res.json(obj);
 });
-client.on('close', () => {
-	console.log('closed');
-});
-client.on('error', (err) => {
-	console.log(err);
-})
+
+function findUser( nick ) {
+	users.forEach(function(elem) {
+		if(elem.nick === nick ) {
+			return elem;
+		}
+	});
+}
+app.listen(80, '0.0.0.0');
