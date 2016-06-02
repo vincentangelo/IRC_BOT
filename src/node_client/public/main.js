@@ -65,6 +65,9 @@ App.prototype.init = function() {
 			 	} 
 		 	)
 		) {
+			Utils.http('POST', '/join?channel=' + this.channel + '&nick=' + this.nickname , function(res) {
+				console.log('joined');
+			} );
 
 			self.startup('hide');
 			Utils.elem('.status-container>h5').innerHTML = 'Channel: '+ self.channel.substring(1, self.channel.length);
@@ -96,17 +99,29 @@ App.prototype.sendMessage = function (e) {
 		console.log(this.connected);
 		if(!this.connected || this.msgForm.elements[0].value.trim() === '' )
 			return false;
-		Utils.elem('.messages-container').innerHTML +=
-		 Mustache.render(this.messageTemplate.innerHTML,
-		  {name: this.nickname + ':', 
-		  	message: this.msgForm.elements[0].value
-		  }
-		)
+		
+		 Utils.http('POST', '/send?nick=' + this.nickname + '&message=' + this.msgForm.elements[0].value, function(res) {
+		 	console.log(sent);
+			Utils.elem('.messages-container').innerHTML +=
+			 Mustache.render(this.messageTemplate.innerHTML,
+			  {name: this.nickname + ':', 
+			  	message: this.msgForm.elements[0].value
+			 }
+		 	)
+		});
 		this.msgForm.elements[0].value = "";
 }
 App.prototype.refresh = function () {
-	Utils.http('get', 'http://www.yahoo.com', function(res) {
-		console.log(res);
+	Utils.http('get', '/pull?nick=' + this.nickname, function(res) {
+		res.messages.forEach( function(elem) {
+			Utils.elem('.messages-container').innerHTML +=
+			Mustache.render(this.messageTemplate.innerHTML,
+				{
+					name: elem.sender + ':', 
+					message: elem.content
+				}
+			)	
+		});
 	});
 }
 
