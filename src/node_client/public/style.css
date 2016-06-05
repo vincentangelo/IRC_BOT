@@ -38,7 +38,11 @@ main section.messages-container {
 section.messages-container>* {
 	margin: 8px 2px;
 }
-section.messages-container .name{
+section.messages-container .from{
+	color:green;
+	
+}
+section.messages-container .sent{
 	color:red;
 	
 }
@@ -100,6 +104,7 @@ div.startup-container {
 	color:white;	
 	margin: 25px auto;
 }
+.sent
 footer {
 	margin-top: 20%;
 	font-size: 15px;

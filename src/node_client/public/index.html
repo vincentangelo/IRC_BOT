@@ -9,18 +9,18 @@
 	<!--Views /-->
 	<script id='message-template' type='text/template'>
 		<div class='message'>
-			<h5 class='name {{name}}'>{{name}}</h5>
+			<h5 class='{{type}}'>{{name}}</h5>
 			<h5 class='message-body'>{{message}}</h5>
 		</div>
 	</script>
 
-	<script id='startup-template' type='template/text'>
+	<script id='startup-template' type='text/template'>
 		<div class='startup-container'>
 			<h2>Configuration</h2>
 			<form id='config-form'>
 				<label>
 					Nickname
-					<input type='text' name='nickname'/>
+					<input type='text' name='nick'/>
 				</label>
 				<label>
 					Channel

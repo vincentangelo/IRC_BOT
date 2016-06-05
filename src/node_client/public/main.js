@@ -9,13 +9,16 @@ var Utils = {
 		return elem.length > 1 ? elem : elem[0];
 	},
 	http: function (method, url, cb) {
+		console.log(url);
 		var req = new XMLHttpRequest();
 		req.onreadystatechange = function() {
 			if(req.readyState === 4 && req.status === 200) {
-				cb(JSON.parse(req.responseText));
+				if(req.responseText.length)
+					cb(req.responseText);
+			} else {
+				return cb(false);
 			}
 		}
-
 		req.open(method.toUpperCase(), url);
 		req.send();
 	},
@@ -36,7 +39,7 @@ function App () {
 	this.channel = "";
 	this.messageStatus = 0;
 	this.connected = false;
-	this.nickname = "";
+	this.nick = "";
 }
 
 App.prototype.init = function() {
@@ -54,24 +57,30 @@ App.prototype.init = function() {
 
 	this.configForm.addEventListener('submit', function(e) {
 		e.preventDefault();		
-		self.nickname = self.configForm.elements[0].value;
-		self.channel = self.configForm.elements[1].value;
+		Utils.elem('#join-btn').style.border = '3px solid #f1c40f';
+		var form = e.target;
 		
 		if(
-			Utils.validate(
-			 	{
-				 	nickname: self.nickname,
-				 	channel:self.channel
-			 	} 
-		 	)
+			true
 		) {
-			Utils.http('POST', '/join?channel=' + this.channel + '&nick=' + this.nickname , function(res) {
-				console.log('joined');
+			
+			self.nick = form.elements[0].value;
+			self.channel = form.elements[1].value.substr(1);
+			console.log(self.channel);
+			console.log(form.elements[0].value);
+			var count = 0;
+			Utils.http('POST', '/join?'+'channel=' + self.channel + '&nick='  + self.nick, function(res) {
+				if(++count > 2) {
+
+					console.log('joined');
+					console.log(self.nick + "    and " + self.channel);
+					Utils.elem('.status-container>h5').innerHTML = 'Channel: '+ self.channel;
+					self.connected = true;
+					self.startup('hide');
+					self.refresh();
+				}
 			} );
 
-			self.startup('hide');
-			Utils.elem('.status-container>h5').innerHTML = 'Channel: '+ self.channel.substring(1, self.channel.length);
-			self.connected = true;
 		} 		
 		else {
 			self.configForm.elements[2].style.border = '3px solid red';
@@ -80,9 +89,6 @@ App.prototype.init = function() {
 	this.msgForm.addEventListener('submit', this.sendMessage.bind(this));
 
 
-	window.setInterval(function() {
-		self.refresh();
-	}, 50);
 
 }
 
@@ -95,33 +101,65 @@ App.prototype.startup = function(cmd) {
 	}
 }
 App.prototype.sendMessage = function (e) {
+	var self = this;
 		e.preventDefault();
 		console.log(this.connected);
 		if(!this.connected || this.msgForm.elements[0].value.trim() === '' )
 			return false;
 		
-		 Utils.http('POST', '/send?nick=' + this.nickname + '&message=' + this.msgForm.elements[0].value, function(res) {
-		 	console.log(sent);
-			Utils.elem('.messages-container').innerHTML +=
-			 Mustache.render(this.messageTemplate.innerHTML,
-			  {name: this.nickname + ':', 
-			  	message: this.msgForm.elements[0].value
-			 }
-		 	)
+		 Utils.http('POST', '/send?nick=' + self.nick + '&message=' + self.msgForm.elements[0].value, function(res) {
+		 	console.log('sent');
 		});
+		Utils.elem('.messages-container').innerHTML +=
+		 Mustache.render(self.messageTemplate.innerHTML,
+		  {name: self.nick + ':',
+		  	type: 'sent', 
+		  	message: self.msgForm.elements[0].value
+		 }
+	 	)
+
 		this.msgForm.elements[0].value = "";
 }
 App.prototype.refresh = function () {
-	Utils.http('get', '/pull?nick=' + this.nickname, function(res) {
-		res.messages.forEach( function(elem) {
-			Utils.elem('.messages-container').innerHTML +=
-			Mustache.render(this.messageTemplate.innerHTML,
-				{
-					name: elem.sender + ':', 
-					message: elem.content
-				}
-			)	
-		});
-	});
-}
+	var self = this;
+	Utils.http('GET', '/pull?nick=' + self.nick, function(res) {
+		var obj;
+		if(res.length > 2) {
+			obj = JSON.parse(res);
+			obj.messages.forEach( function(elem) {
+				console.log(elem.sender);
+					Utils.elem('.messages-container').innerHTML +=
+					Mustache.render(self.messageTemplate.innerHTML,
+					{
+						type:'from',
+						name: elem.sender.substr(1) + ':', 
+						message: elem.content
+					}
+				)	
+			});
+		}
+	})
+	// Utils.elem('.messages-container').innerHTML +=
+	// 	Mustache.render(self.messageTemplate.innerHTML,
+	// 	{
+	// 		sent:false,
+	// 		name: 'CASH9' + ':', 
+	// 		message: 'Whats up????'
+	// 	}
+	// )
+	setTimeout(this.refresh.bind(this), 3500);
+	// Utils.http('get', '/pull?nick=' + self.nick, function(res) {
+	// console.log(res);
+	// 	res.messages.forEach( function(elem) {
+	// 		Utils.elem('.messages-container').innerHTML +=
+	// 		Mustache.render(this.messageTemplate.innerHTML,
+	// 		{
+	// 			name: elem.sender + ':', 
+	// 			message: elem.content
+	// 		}
+	// 	)	
+	// });
 
+	// setTimeout(poll, 5000);
+	// });
+}

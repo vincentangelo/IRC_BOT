@@ -2,7 +2,7 @@
 'use strict';
 const HOST = 'irc.freenode.net';
 const net = require('net');
-
+const EventEmitter = require('events');
 
 class Message {
 	constructor(sender, content) {
@@ -10,8 +10,9 @@ class Message {
 		this.content = content;
 	}
 }
-module.exports = class Client {
+module.exports = class Client extends EventEmitter {
 	constructor(channel, nick) {
+		super();
 		let self = this;
 		this.channel = channel;
 		this.nick = nick;
@@ -20,7 +21,6 @@ module.exports = class Client {
 
 		this.socket = new net.Socket();
 		this.socket.connect(6667, HOST, () => {
-			console.log('connected');
 			self.socket.write('NICK '+ self.nick +' \r\n');
 			self.socket.write('USER '+ self.nick +' 8 * : Testing Bot Connection\r\n');
 		});
@@ -37,17 +37,22 @@ module.exports = class Client {
 		})
 	}
 	readData(data) {
-
 		if(data.toString().indexOf('004') != -1) {
 			this.connected = true;
 			this.socket.write('JOIN '+ this.channel +'\r\n');
+			this.emit('connected');
 
 		} else if(data.toString().toLowerCase().substr(0, 4) === 'ping') {
 			console.log('PING');
 
 			this.socket.write('PONG ' + data.toString().split()[2] +'\r\n'	);
 		} else if(data.toString().indexOf('PRIVMSG') != -1) {
-			this.messages.push( new Message(data.toString().split('!')[0],  data.toString() ) );
+			let str = data.toString();
+			console.log( str.split(':')[2]);
+			this.messages.push( new Message(data.toString().split('!')[0], str.split(':')[2]));
+
+		} else {
+			console.log(data.toString());
 		}
 	}
 	getMessages() {
@@ -59,7 +64,8 @@ module.exports = class Client {
 	writeData(msg) {
 		if(!this.connected)
 			return false;
-		this.socket.write('PRIVMSG ' + this.channel + ' :'+ msg +'\r\n');
+		console.log('sending message');
+		this.socket.write('PRIVMSG ' + this.channel + ' :' + msg + '\r\n');
 	}
 }
 
