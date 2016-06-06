@@ -37,7 +37,7 @@ module.exports = class Client extends EventEmitter {
 		})
 	}
 	readData(data) {
-		if(data.toString().indexOf('004') != -1) {
+		if(data.toString().indexOf('004') != -1 && !this.connected) {
 			this.connected = true;
 			this.socket.write('JOIN '+ this.channel +'\r\n');
 			this.emit('connected');
