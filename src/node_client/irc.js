@@ -49,7 +49,8 @@ module.exports = class Client extends EventEmitter {
 		} else if(data.toString().indexOf('PRIVMSG') != -1) {
 			let str = data.toString();
 			console.log( str.split(':')[2]);
-			this.messages.push( new Message(data.toString().split('!')[0], str.split(':')[2]));
+			var pos = data.toString().substr(1).indexOf(':')+1;
+			this.messages.push( new Message(data.toString().split('!')[0],data.toString().substr(pos)));
 
 		} else {
 			console.log(data.toString());

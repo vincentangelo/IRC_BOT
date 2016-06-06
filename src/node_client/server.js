@@ -15,6 +15,9 @@ app.post('/join', (req, res) => {
 	let channel = '#'+req.query.channel;
 	let nick = req.query.nick;
 	console.log(channel);
+	if(findUser(nick) != "not found") {
+		return res.sendStatus(200);
+	}
 	users.push(new Client (channel, nick ) );
 
 	findUser(nick).on('connected', ()=> {
@@ -28,15 +31,15 @@ app.post('/send', (req, res) => {
 	let nick = req.query.nick;
 
 	if(!nick || !message || users.length === 0)
-		res.sendStatus(400);
+	return res.sendStatus(400);
 	
 	findUser(nick).writeData(message);
 	res.sendStatus(200);
 });
 app.get('/pull', (req, res) => {
 	let nick = req.query.nick;
-	if(users.length === 0) {
-		res.sendStatus(400);
+	if(users.length === 0 || !nick ) {
+		return res.sendStatus(400);
 	}
 	let messages = findUser(nick).getMessages();
 	
